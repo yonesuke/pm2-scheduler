@@ -13,6 +13,27 @@ git clone <your-repo-url>
 cd pm2-scheduler
 ```
 
+## 必要なツール
+
+- **PM2**: プロセス管理
+- **uv**: Pythonスクリプト実行
+- **ffmpeg**: radiko-recorderで使用
+
+```bash
+# macOS
+brew install pm2 uv ffmpeg
+```
+
+## ジョブ別設定
+
+### radiko-recorder
+
+```bash
+# .envファイルを作成
+cp jobs/radiko-recorder/.env.example jobs/radiko-recorder/.env
+# RADIKO_MAIL, RADIKO_PASSWORDを設定
+```
+
 ## 使い方
 
 ### ジョブの追加
