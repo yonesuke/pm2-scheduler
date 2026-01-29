@@ -1,0 +1,15 @@
+{
+  "name": "pm2-scheduler",
+  "version": "1.0.0",
+  "description": "PM2を使った定期実行タスク管理",
+  "scripts": {
+    "start": "pm2 start ecosystem.config.js",
+    "stop": "pm2 stop ecosystem.config.js",
+    "restart": "pm2 restart ecosystem.config.js",
+    "delete": "pm2 delete ecosystem.config.js",
+    "logs": "pm2 logs",
+    "status": "pm2 status"
+  },
+  "keywords": ["pm2", "scheduler", "cron"],
+  "license": "MIT"
+}
