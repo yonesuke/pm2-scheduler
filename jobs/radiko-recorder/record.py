@@ -24,14 +24,35 @@ from mutagen.mp4 import MP4
 from pyradiko import RadikoRecorder
 
 # スクリプトのディレクトリにある.envを読み込む
-load_dotenv(Path(__file__).parent / ".env")
+SCRIPT_DIR = Path(__file__).parent
+load_dotenv(SCRIPT_DIR / ".env")
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
+# ログディレクトリ設定
+LOG_DIR = SCRIPT_DIR / "logs"
+LOG_DIR.mkdir(parents=True, exist_ok=True)
+
+# ログ設定
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+# フォーマッタ
+formatter = logging.Formatter(
+    "%(asctime)s [%(levelname)s] %(funcName)s:%(lineno)d - %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
 )
-logger = logging.getLogger(__name__)
+
+# コンソールハンドラ
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+console_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
+
+# ファイルハンドラ（日付ごとのログファイル）
+log_file = LOG_DIR / f"record_{datetime.now().strftime('%Y%m%d')}.log"
+file_handler = logging.FileHandler(log_file, encoding="utf-8")
+file_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
 
 
 def get_last_broadcast_time(weekday: int, start_hour: int, start_minute: int, end_hour: int, end_minute: int) -> tuple[str, str]:
@@ -87,6 +108,9 @@ def record_program(recorder: RadikoRecorder, program: dict) -> None:
     name = program["name"]
     station = program["station"]
 
+    logger.debug(f"Processing program: {name}")
+    logger.debug(f"Program config: {json.dumps(program, ensure_ascii=False, indent=2)}")
+
     start_time, end_time = get_last_broadcast_time(
         program["weekday"],
         program["start_hour"],
@@ -94,43 +118,80 @@ def record_program(recorder: RadikoRecorder, program: dict) -> None:
         program["end_hour"],
         program["end_minute"],
     )
+    logger.debug(f"Calculated broadcast time: {start_time} - {end_time}")
 
     output_dir = Path(program["output_dir"])
     output_dir.mkdir(parents=True, exist_ok=True)
     output_file = output_dir / f"{name}_{start_time[:8]}.m4a"
 
     if output_file.exists():
-        logger.info(f"[SKIP] {name}: {output_file} already exists")
+        file_size = output_file.stat().st_size / (1024 * 1024)  # MB
+        logger.info(f"[SKIP] {name}: {output_file} already exists ({file_size:.1f}MB)")
         return
 
     logger.info(f"[REC] {name} | {station} | {start_time} - {end_time} | {output_file}")
+    logger.debug(f"Starting ffmpeg recording...")
 
     res = recorder.record(station, start_time, end_time, str(output_file))
 
+    logger.debug(f"ffmpeg return code: {res.returncode}")
+    if res.stdout:
+        logger.debug(f"ffmpeg stdout: {res.stdout.decode()[:1000]}")
+
     if res.returncode == 0:
+        if output_file.exists():
+            file_size = output_file.stat().st_size / (1024 * 1024)  # MB
+            logger.debug(f"Output file size: {file_size:.1f}MB")
+
         if "metadata" in program:
+            logger.debug(f"Adding metadata: {program['metadata']}")
             add_metadata(output_file, program["metadata"], start_time[:8])
-            logger.info(f"[OK] {name} (metadata added)")
+            logger.info(f"[OK] {name} (metadata added, {file_size:.1f}MB)")
         else:
-            logger.info(f"[OK] {name}")
+            logger.info(f"[OK] {name} ({file_size:.1f}MB)")
     else:
         logger.error(f"[FAIL] {name} (code: {res.returncode})")
-        logger.error(f"stderr: {res.stderr.decode() if res.stderr else 'N/A'}")
+        if res.stderr:
+            stderr_text = res.stderr.decode()
+            logger.error(f"stderr: {stderr_text}")
+        if res.stdout:
+            stdout_text = res.stdout.decode()
+            logger.debug(f"stdout: {stdout_text}")
 
 
 def main():
+    logger.info("=" * 60)
+    logger.info("Radiko Recorder started")
+    logger.debug(f"Python version: {__import__('sys').version}")
+    logger.debug(f"Script directory: {SCRIPT_DIR}")
+    logger.debug(f"Log file: {log_file}")
+
     parser = argparse.ArgumentParser(description="Radiko録音スクリプト")
     parser.add_argument("config", help="番組設定JSONファイル")
     args = parser.parse_args()
 
     config_path = Path(args.config)
+    logger.info(f"Loading config: {config_path}")
+
     with open(config_path) as f:
         config = json.load(f)
 
-    recorder = RadikoRecorder()
+    program_count = len(config["programs"])
+    logger.info(f"Found {program_count} program(s) to process")
+    logger.debug(f"Programs: {[p['name'] for p in config['programs']]}")
 
-    for program in config["programs"]:
-        record_program(recorder, program)
+    recorder = RadikoRecorder()
+    logger.debug("RadikoRecorder initialized")
+
+    for i, program in enumerate(config["programs"], 1):
+        logger.info(f"--- Processing {i}/{program_count}: {program['name']} ---")
+        try:
+            record_program(recorder, program)
+        except Exception as e:
+            logger.exception(f"Unexpected error recording {program['name']}: {e}")
+
+    logger.info("Radiko Recorder finished")
+    logger.info("=" * 60)
 
 
 if __name__ == "__main__":

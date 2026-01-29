@@ -1,6 +1,7 @@
 node_modules/
 .DS_Store
 *.log
+logs/
 .env
 recordings/*
 !recordings/.gitkeep
