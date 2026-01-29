@@ -31,6 +31,22 @@
         "album": "バナナムーンGOLD",
         "genre": "Radio"
       }
+    },
+    {
+      "name": "shimohuriann",
+      "station": "LFR",
+      "weekday": 0,
+      "start_hour": 1,
+      "start_minute": 0,
+      "end_hour": 3,
+      "end_minute": 0,
+      "output_dir": "recordings/shimohuriann",
+      "metadata": {
+        "title": "霜降り明星のオールナイトニッポン",
+        "artist": "霜降り明星",
+        "album": "オールナイトニッポン",
+        "genre": "Radio"
+      }
     }
   ]
 }
