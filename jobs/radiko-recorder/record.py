@@ -23,7 +23,8 @@ from dotenv import load_dotenv
 from mutagen.mp4 import MP4
 from pyradiko import RadikoRecorder
 
-load_dotenv()
+# スクリプトのディレクトリにある.envを読み込む
+load_dotenv(Path(__file__).parent / ".env")
 
 logging.basicConfig(
     level=logging.INFO,
@@ -114,6 +115,7 @@ def record_program(recorder: RadikoRecorder, program: dict) -> None:
             logger.info(f"[OK] {name}")
     else:
         logger.error(f"[FAIL] {name} (code: {res.returncode})")
+        logger.error(f"stderr: {res.stderr.decode() if res.stderr else 'N/A'}")
 
 
 def main():
