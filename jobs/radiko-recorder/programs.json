@@ -15,6 +15,22 @@
         "album": "オールナイトニッポン",
         "genre": "Radio"
       }
+    },
+    {
+      "name": "bananamoon",
+      "station": "TBS",
+      "weekday": 5,
+      "start_hour": 1,
+      "start_minute": 0,
+      "end_hour": 3,
+      "end_minute": 0,
+      "output_dir": "recordings/bananamoon",
+      "metadata": {
+        "title": "バナナマンのバナナムーンGOLD",
+        "artist": "バナナマン",
+        "album": "バナナムーンGOLD",
+        "genre": "Radio"
+      }
     }
   ]
 }
