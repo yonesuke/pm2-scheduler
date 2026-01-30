@@ -30,5 +30,14 @@ module.exports = {
         HOST: process.env.PODCAST_HOST || 'http://localhost:3456',
       },
     },
+    {
+      name: 'arxiv-qfin',
+      script: 'node',
+      args: 'fetch.js',
+      cwd: __dirname + '/jobs/arxiv-qfin',
+      cron_restart: '0 9 * * *', // 毎日9時
+      autorestart: false,
+      watch: false,
+    },
   ],
 };

@@ -1,0 +1,9 @@
+{
+  "name": "arxiv-qfin",
+  "version": "1.0.0",
+  "description": "Fetch arXiv q-fin papers and convert to markdown",
+  "dependencies": {
+    "rss-parser": "^3.13.0",
+    "@google/generative-ai": "^0.21.0"
+  }
+}

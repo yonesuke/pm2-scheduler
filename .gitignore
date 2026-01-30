@@ -3,5 +3,8 @@ node_modules/
 *.log
 logs/
 .env
+**/.env
 **/recordings/*
 !**/recordings/.gitkeep
+**/data/*
+!**/data/.gitkeep
