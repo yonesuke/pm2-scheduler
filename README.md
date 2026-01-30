@@ -13,6 +13,14 @@ git clone <your-repo-url>
 cd pm2-scheduler
 ```
 
+## スケジュールされているジョブ
+
+| ジョブ名 | 説明 | スケジュール |
+|---------|------|-------------|
+| n8n | ワークフロー自動化ツール | 常時起動 |
+| radiko-recorder | radikoの番組を録音 | 毎時0分にチェック |
+| podcast-server | 録音ファイルをポッドキャストとして配信 | 常時起動 (port 3456) |
+
 ## 必要なツール
 
 - **PM2**: プロセス管理
@@ -32,6 +40,14 @@ brew install pm2 uv ffmpeg
 # .envファイルを作成
 cp jobs/radiko-recorder/.env.example jobs/radiko-recorder/.env
 # RADIKO_MAIL, RADIKO_PASSWORDを設定
+```
+
+### podcast-server
+
+```bash
+# ルートの.envファイルを作成
+cp .env.example .env
+# PODCAST_HOSTを外部公開URLに設定（例: https://example.com:3456）
 ```
 
 ## 使い方
