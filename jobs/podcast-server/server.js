@@ -15,6 +15,7 @@ const SHOWS = {
   audrey: { title: 'オードリーのオールナイトニッポン', author: 'ニッポン放送' },
   bananamoon: { title: 'バナナムーンGOLD', author: 'TBSラジオ' },
   shimohuriann: { title: '霜降り明星のオールナイトニッポン', author: 'ニッポン放送' },
+  milkboy: { title: 'ミルクボーイの煩悩の塊', author: 'ABCラジオ' },
 };
 
 // Serve audio files
