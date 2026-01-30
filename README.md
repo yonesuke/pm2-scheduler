@@ -20,6 +20,7 @@ cd pm2-scheduler
 | n8n | ワークフロー自動化ツール | 常時起動 |
 | radiko-recorder | radikoの番組を録音 | 毎時0分にチェック |
 | podcast-server | 録音ファイルをポッドキャストとして配信 | 常時起動 (port 3456) |
+| arxiv-qfin | arXiv q-fin論文をPDFダウンロード&Markdown変換 | 毎日9時 |
 
 ## 必要なツール
 
@@ -48,6 +49,14 @@ cp jobs/radiko-recorder/.env.example jobs/radiko-recorder/.env
 # ルートの.envファイルを作成
 cp .env.example .env
 # PODCAST_HOSTを外部公開URLに設定（例: https://example.com:3456）
+```
+
+### arxiv-qfin
+
+```bash
+# .envファイルを作成
+cp jobs/arxiv-qfin/.env.example jobs/arxiv-qfin/.env
+# GEMINI_API_KEYを設定
 ```
 
 ## 使い方
