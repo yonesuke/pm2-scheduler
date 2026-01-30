@@ -47,6 +47,22 @@
         "album": "オールナイトニッポン",
         "genre": "Radio"
       }
+    },
+    {
+      "name": "milkboy",
+      "station": "ABC",
+      "weekday": 1,
+      "start_hour": 0,
+      "start_minute": 0,
+      "end_hour": 1,
+      "end_minute": 0,
+      "output_dir": "recordings/milkboy",
+      "metadata": {
+        "title": "ミルクボーイの煩悩の塊",
+        "artist": "ミルクボーイ",
+        "album": "煩悩の塊",
+        "genre": "Radio"
+      }
     }
   ]
 }
