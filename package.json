@@ -10,6 +10,13 @@
     "logs": "pm2 logs",
     "status": "pm2 status"
   },
-  "keywords": ["pm2", "scheduler", "cron"],
-  "license": "MIT"
+  "keywords": [
+    "pm2",
+    "scheduler",
+    "cron"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^17.2.3"
+  }
 }

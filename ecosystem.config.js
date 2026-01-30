@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 module.exports = {
   apps: [
     {
@@ -15,6 +17,18 @@ module.exports = {
       cron_restart: '0 * * * *', // 毎時0分
       autorestart: false,
       watch: false,
+    },
+    {
+      name: 'podcast-server',
+      script: 'node',
+      args: 'server.js',
+      cwd: __dirname + '/jobs/podcast-server',
+      autorestart: true,
+      watch: false,
+      env: {
+        PORT: 3456,
+        HOST: process.env.PODCAST_HOST || 'http://localhost:3456',
+      },
     },
   ],
 };

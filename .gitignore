@@ -3,5 +3,5 @@ node_modules/
 *.log
 logs/
 .env
-recordings/*
-!recordings/.gitkeep
+**/recordings/*
+!**/recordings/.gitkeep
