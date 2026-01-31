@@ -83,12 +83,18 @@ app.get('/feed/:show', async (req, res) => {
   <language>ja</language>
   <itunes:author>${escapeXml(showMeta.author)}</itunes:author>
   <itunes:explicit>false</itunes:explicit>
-${episodes.map(ep => `  <item>
-    <title>${escapeXml(ep.file.replace(/\.(m4a|mp3)$/, ''))}</title>
+${episodes.map(ep => {
+    const y = ep.date.getFullYear();
+    const m = ep.date.getMonth() + 1;
+    const d = ep.date.getDate();
+    const dateStr = `${y}年${m}月${d}日放送`;
+    return `  <item>
+    <title>${escapeXml(showMeta.title)} ${dateStr}</title>
     <enclosure url="${HOST}/audio/${show}/${encodeURIComponent(ep.file)}" length="${ep.size}" type="audio/mp4"/>
     <pubDate>${ep.date.toUTCString()}</pubDate>
     <guid>${HOST}/audio/${show}/${encodeURIComponent(ep.file)}</guid>
-  </item>`).join('\n')}
+  </item>`;
+  }).join('\n')}
 </channel>
 </rss>`;
 
