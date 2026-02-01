@@ -39,5 +39,15 @@ module.exports = {
       autorestart: false,
       watch: false,
     },
+    {
+      name: 'claude-code-ui',
+      script: 'claude-code-ui',
+      args: '--port 9000',
+      autorestart: true,
+      watch: false,
+      env: {
+        HOST: '0.0.0.0',
+      },
+    },
   ],
 };

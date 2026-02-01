@@ -21,16 +21,21 @@ cd pm2-scheduler
 | radiko-recorder | radikoの番組を録音 | 毎時0分にチェック |
 | podcast-server | 録音ファイルをポッドキャストとして配信 | 常時起動 (port 3456) |
 | arxiv-qfin | arXiv q-fin論文をPDFダウンロード&Markdown変換 | 毎日9時 |
+| claude-code-ui | Claude Code Web UI | 常時起動 (port 9000) |
 
 ## 必要なツール
 
 - **PM2**: プロセス管理
 - **uv**: Pythonスクリプト実行
 - **ffmpeg**: radiko-recorderで使用
+- **@siteboon/claude-code-ui**: Claude Code Web UI
 
 ```bash
 # macOS
 brew install pm2 uv ffmpeg
+
+# claude-code-ui
+npm install -g @siteboon/claude-code-ui
 ```
 
 ## ジョブ別設定
@@ -58,6 +63,20 @@ cp .env.example .env
 cp jobs/arxiv-qfin/.env.example jobs/arxiv-qfin/.env
 # GEMINI_API_KEYを設定
 ```
+
+### claude-code-ui
+
+Claude Codeをブラウザやモバイルから操作できるWeb UI。
+
+```bash
+# グローバルインストール
+npm install -g @siteboon/claude-code-ui
+
+# node-ptyの再ビルド（シェル機能を使う場合）
+cd $(npm root -g)/@siteboon/claude-code-ui && npm rebuild node-pty
+```
+
+アクセス: `http://localhost:9000` または Tailscale経由でモバイルからアクセス可能
 
 ## 使い方
 
