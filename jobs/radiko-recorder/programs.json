@@ -63,6 +63,22 @@
         "album": "煩悩の塊",
         "genre": "Radio"
       }
+    },
+    {
+      "name": "haraichi",
+      "station": "TBS",
+      "weekday": 5,
+      "start_hour": 0,
+      "start_minute": 0,
+      "end_hour": 1,
+      "end_minute": 0,
+      "output_dir": "recordings/haraichi",
+      "metadata": {
+        "title": "ハライチのターン！",
+        "artist": "ハライチ",
+        "album": "ハライチのターン",
+        "genre": "Radio"
+      }
     }
   ]
 }
