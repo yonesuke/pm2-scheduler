@@ -13,9 +13,17 @@ const app = express();
 // Show metadata (customize as needed)
 const SHOWS = {
   audrey: { title: 'オードリーのオールナイトニッポン', author: 'ニッポン放送' },
+  audrey_classic: { title: 'オードリー 2009-2012 傑作トーク', author: 'ニッポン放送' },
   bananamoon: { title: 'バナナムーンGOLD', author: 'TBSラジオ' },
   shimohuriann: { title: '霜降り明星のオールナイトニッポン', author: 'ニッポン放送' },
+  shimofuri_damashiuchi: { title: '霜降り明星のだましうち！', author: 'MBSラジオ' },
   milkboy: { title: 'ミルクボーイの煩悩の塊', author: 'ABCラジオ' },
+  haraichi: { title: 'ハライチのターン', author: 'TBSラジオ' },
+  fuwachan: { title: 'フワちゃんのオールナイトニッポン0', author: 'ニッポン放送' },
+  yoshioka: { title: 'UR LIFESTYLE COLLEGE', author: 'J-WAVE' },
+  hinatazaka: { title: '日向坂46の「ひ」', author: 'ニッポン放送' },
+  hoshinogen: { title: '星野源のオールナイトニッポン', author: 'ニッポン放送' },
+  ichinose: { title: 'DRAMA QUEEN', author: '市野瀬瞳' },
 };
 
 // Serve audio files
