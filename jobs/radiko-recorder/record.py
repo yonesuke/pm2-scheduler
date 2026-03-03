@@ -74,8 +74,8 @@ def get_last_broadcast_time(weekday: int, start_hour: int, start_minute: int, en
     start = target_day.replace(hour=start_hour, minute=start_minute, second=0, microsecond=0)
     end = target_day.replace(hour=end_hour, minute=end_minute, second=0, microsecond=0)
 
-    # まだ放送が終了していない場合は前週
-    if end > now:
+    # まだ放送が終了していない場合（終了から5分以内も含む）は前週
+    if end + timedelta(minutes=5) > now:
         start -= timedelta(days=7)
         end -= timedelta(days=7)
 
