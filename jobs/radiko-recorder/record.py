@@ -1,9 +1,8 @@
 # /// script
 # requires-python = ">=3.10"
 # dependencies = [
-#     "pyradiko @ git+https://github.com/yonesuke/pyradiko.git",
+#     "pyradiko[metadata] @ git+https://github.com/yonesuke/pyradiko.git",
 #     "python-dotenv",
-#     "mutagen",
 # ]
 # ///
 """
@@ -20,7 +19,6 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
-from mutagen.mp4 import MP4
 from pyradiko import RadikoRecorder
 
 # スクリプトのディレクトリにある.envを読み込む
@@ -55,7 +53,13 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 
-def get_last_broadcast_time(weekday: int, start_hour: int, start_minute: int, end_hour: int, end_minute: int) -> tuple[str, str]:
+def get_last_broadcast_time(
+    weekday: int,
+    start_hour: int,
+    start_minute: int,
+    end_hour: int,
+    end_minute: int,
+) -> tuple[str, str]:
     """直近の放送時間を取得
 
     Args:
@@ -80,27 +84,6 @@ def get_last_broadcast_time(weekday: int, start_hour: int, start_minute: int, en
         end -= timedelta(days=7)
 
     return start.strftime("%Y%m%d%H%M"), end.strftime("%Y%m%d%H%M")
-
-
-def add_metadata(file_path: Path, metadata: dict, broadcast_date: str) -> None:
-    """m4aファイルにメタデータを追加"""
-    audio = MP4(file_path)
-
-    # 放送日をYYYY-MM-DD形式に変換
-    date_str = f"{broadcast_date[:4]}-{broadcast_date[4:6]}-{broadcast_date[6:8]}"
-
-    if "title" in metadata:
-        audio["\xa9nam"] = [f"{metadata['title']} ({date_str})"]
-    if "artist" in metadata:
-        audio["\xa9ART"] = [metadata["artist"]]
-    if "album" in metadata:
-        audio["\xa9alb"] = [metadata["album"]]
-    if "genre" in metadata:
-        audio["\xa9gen"] = [metadata["genre"]]
-
-    audio["\xa9day"] = [date_str]
-
-    audio.save()
 
 
 def record_program(recorder: RadikoRecorder, program: dict) -> None:
@@ -130,9 +113,22 @@ def record_program(recorder: RadikoRecorder, program: dict) -> None:
         return
 
     logger.info(f"[REC] {name} | {station} | {start_time} - {end_time} | {output_file}")
-    logger.debug(f"Starting ffmpeg recording...")
+    logger.debug("Starting ffmpeg recording with auto metadata embedding...")
 
-    res = recorder.record(station, start_time, end_time, str(output_file))
+    meta = program.get("metadata", {}).copy() if "metadata" in program else {}
+    if "title" in meta:
+        date_str = f"{start_time[:4]}-{start_time[4:6]}-{start_time[6:8]}"
+        meta["title"] = f"{meta['title']} ({date_str})"
+        meta["date"] = date_str
+
+    res = recorder.record(
+        station,
+        start_time,
+        end_time,
+        str(output_file),
+        embed_metadata=True,
+        metadata=meta if meta else None,
+    )
 
     logger.debug(f"ffmpeg return code: {res.returncode}")
     if res.stdout:
@@ -142,20 +138,14 @@ def record_program(recorder: RadikoRecorder, program: dict) -> None:
         if output_file.exists():
             file_size = output_file.stat().st_size / (1024 * 1024)  # MB
             logger.debug(f"Output file size: {file_size:.1f}MB")
-
-        if "metadata" in program:
-            logger.debug(f"Adding metadata: {program['metadata']}")
-            add_metadata(output_file, program["metadata"], start_time[:8])
-            logger.info(f"[OK] {name} (metadata added, {file_size:.1f}MB)")
-        else:
-            logger.info(f"[OK] {name} ({file_size:.1f}MB)")
+        logger.info(f"[OK] {name} (metadata & cover embedded, {file_size:.1f}MB)")
     else:
         logger.error(f"[FAIL] {name} (code: {res.returncode})")
         if res.stderr:
-            stderr_text = res.stderr.decode()
+            stderr_text = res.stderr.decode(errors="replace")
             logger.error(f"stderr: {stderr_text}")
         if res.stdout:
-            stdout_text = res.stdout.decode()
+            stdout_text = res.stdout.decode(errors="replace")
             logger.debug(f"stdout: {stdout_text}")
 
 
@@ -173,7 +163,7 @@ def main():
     config_path = Path(args.config)
     logger.info(f"Loading config: {config_path}")
 
-    with open(config_path) as f:
+    with open(config_path, encoding="utf-8") as f:
         config = json.load(f)
 
     program_count = len(config["programs"])
